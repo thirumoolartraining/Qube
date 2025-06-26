@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Phone, Mail, Globe } from 'lucide-react';
-import qubeLogo from '../assets/images/qube-logo.png';
+const qubeLogo = './images/products/qube-logo.png';
 import { useCart } from '../hooks/useCart';
 
 const Header: React.FC = () => {

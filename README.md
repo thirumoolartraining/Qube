@@ -1,7 +1,5 @@
 # Qube Health Care - E-commerce Website
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthirumoolartraining%2FQube&project-name=qube-healthcare&repository-name=qube-healthcare)
-
 ## Overview
 Qube Health Care is a modern e-commerce platform for pharmaceutical products, built with React, TypeScript, Vite, and Tailwind CSS.
 
@@ -32,13 +30,7 @@ Qube Health Care is a modern e-commerce platform for pharmaceutical products, bu
    yarn
    ```
 
-3. Create a `.env` file in the root directory with your environment variables:
-   ```env
-   VITE_SUPABASE_URL=your_supabase_url
-   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-   ```
-
-4. Start the development server
+3. Start the development server
    ```bash
    npm run dev
    # or
@@ -47,26 +39,22 @@ Qube Health Care is a modern e-commerce platform for pharmaceutical products, bu
 
 ## Deployment
 
-### Vercel
-This project is configured for easy deployment on Vercel. Click the button below to deploy:
+This application can be deployed to any static hosting service that supports single-page applications (SPAs) with client-side routing. Here are the general steps:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fthirumoolartraining%2FQube&project-name=qube-healthcare&repository-name=qube-healthcare)
+1. Build the application:
+   ```bash
+   npm run build
+   # or
+   yarn build
+   ```
 
-### Manual Deployment
-1. Push your code to a GitHub repository
-2. Import the repository to Vercel
-3. Vercel will automatically detect the Vite project and set up the build settings
-4. Add your environment variables in the Vercel project settings
-5. Deploy!
+2. Deploy the contents of the `dist` directory to your preferred static hosting service.
+
+3. Ensure the hosting service is configured to serve `index.html` for all routes to support client-side routing.
 
 ## Environment Variables
 
-For local development, create a `.env` file in the root directory with the following variables:
-
-```env
-VITE_SUPABASE_URL=your_supabase_url
-VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
-```
+No environment variables are required for local development as the application now uses local storage for data persistence.
 
 ## Technologies Used
 - React 18

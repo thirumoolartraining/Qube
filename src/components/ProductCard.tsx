@@ -2,6 +2,7 @@ import React from 'react';
 import { ShoppingCart, Heart, Star } from 'lucide-react';
 import { Product } from '../types/product';
 import { useCart } from '../hooks/useCart';
+import { getImageUrl } from '../utils/imageUtils.js'; // Added .js extension
 
 interface ProductCardProps {
   product: Product;
@@ -27,7 +28,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Image Section */}
       <div className="relative pt-[100%] overflow-hidden">
         <img
-          src={product.image}
+          src={getImageUrl(product.image)}
           alt={product.name}
           loading="lazy"
           className="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
@@ -75,17 +76,19 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         <p className="text-text-secondary text-sm mb-4 line-clamp-2 leading-relaxed">{product.description}</p>
         
-        {/* Benefits Pills */}
-        <div className="flex flex-wrap gap-2 mb-5">
-          {product.benefits.slice(0, 2).map((benefit, index) => (
-            <span
-              key={index}
-              className="bg-info/10 text-info px-3 py-1 rounded-full text-xs font-medium"
-            >
-              {benefit}
-            </span>
-          ))}
-        </div>
+        {/* Benefits Pills - Only show if benefits exist */}
+        {product.benefits && product.benefits.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-5">
+            {product.benefits.slice(0, 2).map((benefit, index) => (
+              <span
+                key={index}
+                className="bg-info/10 text-info px-3 py-1 rounded-full text-xs font-medium"
+              >
+                {benefit}
+              </span>
+            ))}
+          </div>
+        )}
         
         {/* Price and Actions */}
         <div className="flex items-center justify-between mb-4">

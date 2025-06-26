@@ -1,8 +1,30 @@
-import { supabase } from '../lib/supabase';
-import { Database } from '../lib/supabase-types';
+// Local storage key for RFQ requests
+const RFQ_STORAGE_KEY = 'qube_rfq_requests';
 
-type RFQRequest = Database['public']['Tables']['rfq_requests']['Row'];
-type RFQInsert = Database['public']['Tables']['rfq_requests']['Insert'];
+type RFQStatus = 'pending' | 'in_progress' | 'completed' | 'rejected';
+
+export interface RFQRequest {
+  id: string;
+  user_id: string | null;
+  name: string;
+  email: string;
+  company: string;
+  phone: string;
+  product_interest: string;
+  quantity: number;
+  message: string;
+  status: RFQStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+// Helper functions for local storage
+const getRFQs = (): RFQRequest[] => {
+  if (typeof window === 'undefined') return [];
+  const rfqsJson = localStorage.getItem(RFQ_STORAGE_KEY);
+  return rfqsJson ? JSON.parse(rfqsJson) : [];
+};
+
 
 export interface CreateRFQData {
   name: string;
@@ -16,106 +38,41 @@ export interface CreateRFQData {
 
 export class RFQService {
   // Create a new RFQ request
-  static async createRFQ(rfqData: CreateRFQData): Promise<RFQRequest> {
-    const { data: { user } } = await supabase.auth.getUser();
-
-    const rfqInsert: RFQInsert = {
+  static async createRFQ(rfqData: CreateRFQData, userId?: string): Promise<RFQRequest> {
+    const now = new Date().toISOString();
+    
+    const newRFQ: RFQRequest = {
+      id: `rfq_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      user_id: userId || null,
       ...rfqData,
-      user_id: user?.id || null,
-      status: 'pending'
+      status: 'pending',
+      created_at: now,
+      updated_at: now
     };
 
-    const { data, error } = await supabase
-      .from('rfq_requests')
-      .insert(rfqInsert)
-      .select()
-      .single();
+    // Save to local storage
+    const rfqs = getRFQs();
+    rfqs.push(newRFQ);
+    localStorage.setItem(RFQ_STORAGE_KEY, JSON.stringify(rfqs));
 
-    if (error) {
-      console.error('Error creating RFQ request:', error);
-      throw new Error('Failed to create RFQ request');
-    }
-
-    return data;
+    return newRFQ;
   }
 
   // Get user's RFQ requests
-  static async getUserRFQs(): Promise<RFQRequest[]> {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      throw new Error('User must be authenticated');
+  static async getUserRFQs(userId: string): Promise<RFQRequest[]> {
+    if (!userId) {
+      throw new Error('User ID is required');
     }
 
-    const { data, error } = await supabase
-      .from('rfq_requests')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching user RFQs:', error);
-      throw new Error('Failed to fetch RFQ requests');
-    }
-
-    return data || [];
+    const rfqs = getRFQs();
+    return rfqs
+      .filter(rfq => rfq.user_id === userId)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 
-  // Get RFQ by ID
-  static async getRFQById(rfqId: string): Promise<RFQRequest | null> {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      throw new Error('User must be authenticated');
-    }
-
-    const { data, error } = await supabase
-      .from('rfq_requests')
-      .select('*')
-      .eq('id', rfqId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null; // RFQ not found
-      }
-      console.error('Error fetching RFQ:', error);
-      throw new Error('Failed to fetch RFQ request');
-    }
-
-    return data;
-  }
-
-  // Update RFQ status (admin only)
-  static async updateRFQStatus(rfqId: string, status: RFQRequest['status']): Promise<RFQRequest> {
-    const { data, error } = await supabase
-      .from('rfq_requests')
-      .update({ status })
-      .eq('id', rfqId)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating RFQ status:', error);
-      throw new Error('Failed to update RFQ status');
-    }
-
-    return data;
-  }
-
-  // Get all RFQ requests (admin only)
+  // Get all RFQ requests (for admin)
   static async getAllRFQs(): Promise<RFQRequest[]> {
-    const { data, error } = await supabase
-      .from('rfq_requests')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching all RFQs:', error);
-      throw new Error('Failed to fetch RFQ requests');
-    }
-
-    return data || [];
+    const rfqs = getRFQs();
+    return rfqs.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 }

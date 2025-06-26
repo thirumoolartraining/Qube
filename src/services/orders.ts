@@ -1,11 +1,35 @@
-import { supabase } from '../lib/supabase';
-import { Database } from '../lib/supabase-types';
 import { CartItem } from '../types/product';
 
-type Order = Database['public']['Tables']['orders']['Row'];
-type OrderInsert = Database['public']['Tables']['orders']['Insert'];
-type OrderItem = Database['public']['Tables']['order_items']['Row'];
-type OrderItemInsert = Database['public']['Tables']['order_items']['Insert'];
+type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
+export interface Order {
+  id: string;
+  user_id: string;
+  total_amount: number;
+  status: OrderStatus;
+  shipping_address: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    country: string;
+    postalCode: string;
+  };
+  order_notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string;
+  quantity: number;
+  price: number;
+  created_at: string;
+}
 
 export interface CreateOrderData {
   shipping_address: {
@@ -22,12 +46,27 @@ export interface CreateOrderData {
   items: CartItem[];
 }
 
+// Local storage keys
+const ORDERS_STORAGE_KEY = 'qube_orders';
+const ORDER_ITEMS_STORAGE_KEY = 'qube_order_items';
+
+// Helper functions for local storage
+const getOrders = (): Order[] => {
+  if (typeof window === 'undefined') return [];
+  const ordersJson = localStorage.getItem(ORDERS_STORAGE_KEY);
+  return ordersJson ? JSON.parse(ordersJson) : [];
+};
+
+const getOrderItems = (): OrderItem[] => {
+  if (typeof window === 'undefined') return [];
+  const itemsJson = localStorage.getItem(ORDER_ITEMS_STORAGE_KEY);
+  return itemsJson ? JSON.parse(itemsJson) : [];
+};
+
 export class OrderService {
   // Create a new order
-  static async createOrder(orderData: CreateOrderData): Promise<Order> {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
+  static async createOrder(orderData: CreateOrderData, userId: string): Promise<Order> {
+    if (!userId) {
       throw new Error('User must be authenticated to create an order');
     }
 
@@ -38,150 +77,122 @@ export class OrderService {
     );
 
     // Create the order
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .insert({
-        user_id: user.id,
-        total_amount: totalAmount,
-        shipping_address: orderData.shipping_address,
-        order_notes: orderData.order_notes,
-        status: 'pending'
-      })
-      .select()
-      .single();
+    const newOrder: Order = {
+      id: `order_${Date.now()}`,
+      user_id: userId,
+      total_amount: totalAmount,
+      shipping_address: orderData.shipping_address,
+      order_notes: orderData.order_notes,
+      status: 'pending',
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
 
-    if (orderError) {
-      console.error('Error creating order:', orderError);
-      throw new Error('Failed to create order');
-    }
+    // Save order to local storage
+    const orders = getOrders();
+    orders.push(newOrder);
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
 
     // Create order items
-    const orderItems: OrderItemInsert[] = orderData.items.map(item => ({
-      order_id: order.id,
+    const orderItems = getOrderItems();
+    const newOrderItems = orderData.items.map(item => ({
+      id: `order_item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      order_id: newOrder.id,
       product_id: item.product.id,
       quantity: item.quantity,
-      unit_price: item.product.price,
-      total_price: item.product.price * item.quantity
+      price: item.product.price,
+      created_at: new Date().toISOString()
     }));
 
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems);
+    orderItems.push(...newOrderItems);
+    localStorage.setItem(ORDER_ITEMS_STORAGE_KEY, JSON.stringify(orderItems));
 
-    if (itemsError) {
-      console.error('Error creating order items:', itemsError);
-      // Rollback order creation
-      await supabase.from('orders').delete().eq('id', order.id);
-      throw new Error('Failed to create order items');
-    }
-
-    return order;
+    return newOrder;
   }
 
-  // Get user's orders
-  static async getUserOrders(): Promise<Order[]> {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      throw new Error('User must be authenticated');
+  // Get orders for the current user
+  static async getUserOrders(userId: string): Promise<Order[]> {
+    if (!userId) {
+      throw new Error('User must be authenticated to view orders');
     }
 
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('user_id', user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching user orders:', error);
-      throw new Error('Failed to fetch orders');
-    }
-
-    return data || [];
+    const orders = getOrders();
+    return orders
+      .filter(order => order.user_id === userId)
+      .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   }
 
   // Get order by ID with items
-  static async getOrderById(orderId: string): Promise<Order & { items: (OrderItem & { product: any })[] } | null> {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    if (!user) {
-      throw new Error('User must be authenticated');
+  static async getOrderById(orderId: string, userId: string): Promise<{
+    order: Order;
+    items: Array<OrderItem & { product: any }>;
+  }> {
+    const orders = getOrders();
+    const order = orders.find(o => o.id === orderId && o.user_id === userId);
+
+    if (!order) {
+      throw new Error('Order not found');
     }
 
-    // Get order
-    const { data: order, error: orderError } = await supabase
-      .from('orders')
-      .select('*')
-      .eq('id', orderId)
-      .eq('user_id', user.id)
-      .single();
-
-    if (orderError) {
-      if (orderError.code === 'PGRST116') {
-        return null; // Order not found
-      }
-      console.error('Error fetching order:', orderError);
-      throw new Error('Failed to fetch order');
-    }
-
-    // Get order items with product details
-    const { data: items, error: itemsError } = await supabase
-      .from('order_items')
-      .select(`
-        *,
-        product:products(*)
-      `)
-      .eq('order_id', orderId);
-
-    if (itemsError) {
-      console.error('Error fetching order items:', itemsError);
-      throw new Error('Failed to fetch order items');
-    }
+    // Note: In a real app, you would fetch the product details from your products service
+    const orderItems = getOrderItems().filter(item => item.order_id === orderId);
+    const itemsWithProducts = orderItems.map(item => ({
+      ...item,
+      product: { id: item.product_id, price: item.price } // Simplified product data
+    }));
 
     return {
-      ...order,
-      items: items || []
+      order,
+      items: itemsWithProducts
     };
   }
 
-  // Update order status (admin only)
-  static async updateOrderStatus(orderId: string, status: Order['status']): Promise<Order> {
-    const { data, error } = await supabase
-      .from('orders')
-      .update({ status })
-      .eq('id', orderId)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating order status:', error);
-      throw new Error('Failed to update order status');
+  // Update order status
+  static async updateOrderStatus(orderId: string, status: OrderStatus, userId: string): Promise<Order> {
+    const orders = getOrders();
+    const orderIndex = orders.findIndex(o => o.id === orderId && o.user_id === userId);
+    
+    if (orderIndex === -1) {
+      throw new Error('Order not found');
     }
 
-    return data;
+    const updatedOrder = {
+      ...orders[orderIndex],
+      status,
+      updated_at: new Date().toISOString()
+    };
+
+    orders[orderIndex] = updatedOrder;
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+
+    return updatedOrder;
   }
 
   // Cancel order
-  static async cancelOrder(orderId: string): Promise<Order> {
-    const { data: { user } } = await supabase.auth.getUser();
+  static async cancelOrder(orderId: string, userId: string): Promise<Order> {
+    const orders = getOrders();
+    const orderIndex = orders.findIndex(o => o.id === orderId && o.user_id === userId);
     
-    if (!user) {
-      throw new Error('User must be authenticated');
+    if (orderIndex === -1) {
+      throw new Error('Order not found');
     }
 
-    const { data, error } = await supabase
-      .from('orders')
-      .update({ status: 'cancelled' })
-      .eq('id', orderId)
-      .eq('user_id', user.id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error cancelling order:', error);
-      throw new Error('Failed to cancel order');
+    // Only allow cancelling pending orders
+    if (orders[orderIndex].status !== 'pending') {
+      throw new Error('Only pending orders can be cancelled');
     }
 
-    return data;
+    // Update the order status to cancelled
+    const updatedOrder = {
+      ...orders[orderIndex],
+      status: 'cancelled' as OrderStatus,
+      updated_at: new Date().toISOString()
+    };
+
+    // Save the updated order
+    orders[orderIndex] = updatedOrder;
+    localStorage.setItem(ORDERS_STORAGE_KEY, JSON.stringify(orders));
+
+    return updatedOrder;
   }
 }

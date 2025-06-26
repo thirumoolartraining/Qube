@@ -68,7 +68,8 @@ const CartDrawer: React.FC = () => {
             ) : (
               <div className="space-y-4">
                 {items.map((item) => {
-                  const minQuantity = item.product.minOrderQuantity || 1;
+                  const minQuantity = item.product.minOrderQuantity || 20;
+                  const orderIncrement = item.product.orderIncrement || 10;
                   const isAtMinimum = item.quantity <= minQuantity;
                   
                   return (
@@ -88,14 +89,14 @@ const CartDrawer: React.FC = () => {
                         <div className="flex items-center mt-1">
                           <AlertCircle className="w-3 h-3 text-amber-500 mr-1 flex-shrink-0" />
                           <span className="text-xs text-amber-600">
-                            Min: {minQuantity} | Increments of 10
+                            Min: {minQuantity} | Increments of {orderIncrement}
                           </span>
                         </div>
                         
                         <div className="flex items-center space-x-3 mt-3">
                           <button
                             onClick={() => {
-                              const newQuantity = Math.max(minQuantity, item.quantity - 10);
+                              const newQuantity = Math.max(minQuantity, item.quantity - orderIncrement);
                               updateQuantity(item.product.id, newQuantity);
                             }}
                             className={`p-2 rounded-full transition-colors duration-200 ${
@@ -104,31 +105,31 @@ const CartDrawer: React.FC = () => {
                                 : 'hover:bg-surface'
                             }`}
                             disabled={isAtMinimum}
-                            aria-label={`Decrease quantity of ${item.product.name} by 10`}
-                            title={isAtMinimum ? `Minimum quantity is ${minQuantity}` : 'Decrease by 10'}
+                            aria-label={`Decrease quantity of ${item.product.name} by ${orderIncrement}`}
+                            title={isAtMinimum ? `Minimum quantity is ${minQuantity}` : `Decrease by ${orderIncrement}`}
                           >
-                            <span className="text-xs">-10</span>
+                            <span className="text-xs">-{orderIncrement}</span>
                           </button>
                           
                           <div className="flex flex-col items-center">
                             <span className="w-12 text-center font-medium text-text-primary">{item.quantity}</span>
-                            {item.quantity % 10 !== 0 && (
-                              <span className="text-xs text-amber-600">Round to {Math.ceil(item.quantity / 10) * 10}</span>
+                            {item.quantity % orderIncrement !== 0 && (
+                              <span className="text-xs text-amber-600">Round to {Math.ceil(item.quantity / orderIncrement) * orderIncrement}</span>
                             )}
                           </div>
                           
                           <button
                             onClick={() => {
-                              const newQuantity = item.quantity % 10 === 0 
-                                ? item.quantity + 10 
-                                : Math.ceil(item.quantity / 10) * 10;
+                              const newQuantity = item.quantity % orderIncrement === 0 
+                                ? item.quantity + orderIncrement 
+                                : Math.ceil(item.quantity / orderIncrement) * orderIncrement;
                               updateQuantity(item.product.id, newQuantity);
                             }}
                             className="p-2 hover:bg-surface rounded-full transition-colors duration-200"
-                            aria-label={`Increase quantity of ${item.product.name} to next multiple of 10`}
-                            title="Increase to next multiple of 10"
+                            aria-label={`Increase quantity of ${item.product.name} to next multiple of ${orderIncrement}`}
+                            title={`Increase to next multiple of ${orderIncrement}`}
                           >
-                            <span className="text-xs">+10</span>
+                            <span className="text-xs">+{orderIncrement}</span>
                           </button>
                           
                           <button

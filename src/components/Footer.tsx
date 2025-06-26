@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Facebook, Twitter, Instagram, Linkedin, Shield, Award, Globe } from 'lucide-react';
-import qubeLogo from '../assets/images/qube-logo.png';
+const qubeLogo = './images/products/qube-logo.png';
 
 const Footer: React.FC = () => {
   return (

@@ -1,19 +1,39 @@
 import { Product } from '../types/product';
-import { getImageUrl } from '../utils/imageUtils';
+
+// Image paths in public directory
+const images = {
+  biotin: '/images/products/21stcentury-biotin.png',
+  omega3: '/images/products/boldfit-omega3.png',
+  teatreeFacewash: '/images/products/teatree-facewash.png',
+  aloeVeraGel: '/images/products/kapiva-aleovera-gel.png',
+  multivitamin: '/images/products/hk-vitals-multivitamin.png',
+  vitaminD3: '/images/products/hkvitals-vitamind3.png',
+  zinc: '/images/products/hkvitals-zinc.png',
+  cetaphil: '/images/products/cetaphil-moisturising-cream.png',
+  boroplus: '/images/products/boroplus-antiseptic-cream.png',
+  sunscreen: '/images/products/lotus-sunscreen.png',
+  mouthwash: '/images/products/mouthwash.png',
+  bodywash: '/images/products/omorfee-bodywash.png'
+};
 
 const now = new Date().toISOString();
 
-const createProduct = (product: Omit<Product, 'image' | 'inStock' | 'minOrderQuantity'> & {
+const createProduct = (product: Omit<Product, 'image' | 'inStock' | 'minOrderQuantity' | 'rating' | 'numReviews' | 'orderIncrement'> & {
   image_url: string;
   in_stock: boolean;
-  min_order_quantity: number;
+  min_order_quantity?: number;
   created_at?: string;
   updated_at?: string;
-}): Product => ({
+}): Product & { orderIncrement: number } => ({
   ...product,
   image: product.image_url,
   inStock: product.in_stock,
-  minOrderQuantity: product.min_order_quantity,
+  // Set minimum order quantity to 20 if not specified
+  minOrderQuantity: 20,
+  // Add order increment property (10 units)
+  orderIncrement: 10,
+  rating: 0,
+  numReviews: 0,
 });
 
 export const products: Product[] = [
@@ -22,9 +42,8 @@ export const products: Product[] = [
     name: '21st Century Biotine',
     description: 'High-potency biotin supplement for healthy hair, skin, and nails',
     price: 800,
-    image_url: getImageUrl('21stcentury-biotin.png'),
+    image_url: images.biotin,
     category: 'vitamins',
-    tags: ['hair-health', 'skin-care', 'nail-strength'],
     benefits: [
       'Promotes healthy hair growth and reduces breakage',
       'Strengthens nails and prevents brittleness',
@@ -33,19 +52,18 @@ export const products: Product[] = [
     ingredients: ['Biotin (as d-Biotin)', 'Calcium Carbonate', 'Microcrystalline Cellulose'],
     in_stock: true,
     featured: true,
-    min_order_quantity: 1,
+    min_order_quantity: 20,
     certifications: ['WHO-GMP', 'ISO 9001'],
     created_at: now,
     updated_at: now
   }),
   createProduct({
     id: '2',
-    name: 'Boldfit Omega 3 Fish Oil',
+    name: 'Boldfit Omega 3',
     description: 'High-purity fish oil with EPA and DHA for heart and brain health',
     price: 600,
-    image_url: getImageUrl('boldfit-omega3.png'),
+    image_url: images.omega3,
     category: 'supplements',
-    tags: ['heart-health', 'brain-function', 'joint-support'],
     benefits: [
       'Supports cardiovascular health and circulation',
       'Promotes brain function and cognitive performance',
@@ -54,40 +72,122 @@ export const products: Product[] = [
     ingredients: ['Fish Oil', 'Gelatin', 'Glycerin', 'Purified Water'],
     in_stock: true,
     featured: true,
-    min_order_quantity: 1,
+    min_order_quantity: 20,
     certifications: ['WHO-GMP', 'ISO 9001'],
     created_at: now,
     updated_at: now
   }),
   createProduct({
     id: '3',
-    name: "St D'vence Tea Tree Face Wash",
-    description: 'Purifying face wash with tea tree oil for clear, refreshed skin',
-    price: 499,
-    image_url: getImageUrl('teatree-facewash.png'),
-    category: 'skincare',
-    tags: ['oil-control', 'acne-prone', 'deep-cleansing'],
+    name: "Boroplus Antiseptic Cream",
+    description: 'Antiseptic cream for minor cuts, burns and skin infections',
+    price: 120,
+    image_url: images.boroplus,
+    category: 'personal-care',
     benefits: [
-      'Deep cleanses and removes excess oil',
-      'Helps prevent breakouts and blemishes',
-      'Soothes irritated skin with natural tea tree oil'
+      'Prevents infection in minor cuts and burns',
+      'Soothes skin irritation and itching',
+      'Promotes faster healing'
     ],
-    ingredients: ['Aqua', 'Tea Tree Oil', 'Glycerin', 'Aloe Vera', 'Vitamin E'],
+    ingredients: ['Cetrimide', 'Chlorhexidine Gluconate', 'Liquid Paraffin', 'White Soft Paraffin'],
     in_stock: true,
-    featured: true,
-    min_order_quantity: 1,
-    certifications: ['Dermatologist Tested', 'Paraben Free'],
+    featured: false,
+    min_order_quantity: 20,
+    certifications: ['ISO Certified', 'GMP Certified'],
     created_at: now,
     updated_at: now
   }),
   createProduct({
     id: '4',
-    name: 'Kapiva Aloe Vera Gel',
+    name: 'Cetaphil Moisturising Cream',
+    description: 'Rich, non-greasy moisturizer for dry, sensitive skin',
+    price: 550,
+    image_url: images.cetaphil,
+    category: 'skincare',
+    benefits: [
+      'Intensely hydrates dry skin',
+      'Non-comedogenic and fragrance-free',
+      'Suitable for sensitive skin types',
+      'Provides 24-hour hydration'
+    ],
+    ingredients: ['Water', 'Glycerin', 'Petrolatum', 'Cetearyl Alcohol'],
+    in_stock: true,
+    featured: true,
+    min_order_quantity: 20,
+    certifications: ['Dermatologist Recommended', 'Hypoallergenic'],
+    created_at: now,
+    updated_at: now
+  }),
+  createProduct({
+    id: '5',
+    name: 'HK Vitals Multivitamin with Zinc & Vitamin C',
+    description: 'Complete daily multivitamin with zinc and vitamin C for overall health and wellness',
+    price: 1599,
+    image_url: images.multivitamin,
+    category: 'vitamins',
+    benefits: [
+      'Comprehensive blend of essential vitamins and minerals',
+      'Supports immune system function',
+      'Boosts energy and vitality',
+      'Promotes overall health and wellbeing'
+    ],
+    ingredients: ['Vitamin A', 'Vitamin C', 'Vitamin D3', 'Vitamin E', 'B Vitamins', 'Zinc', 'Selenium', 'Magnesium'],
+    in_stock: true,
+    featured: true,
+    min_order_quantity: 20,
+    certifications: ['WHO-GMP Certified', 'Vegan', 'Gluten Free'],
+    created_at: now,
+    updated_at: now
+  }),
+  createProduct({
+    id: '6',
+    name: 'HK Vitals Vitamin D3',
+    description: 'High-potency vitamin D3 supplement for bone and immune health',
+    price: 599,
+    image_url: images.vitaminD3,
+    category: 'vitamins',
+    benefits: [
+      'Supports bone health and calcium absorption',
+      'Enhances immune system function',
+      'Promotes muscle strength',
+      'May help improve mood'
+    ],
+    ingredients: ['Cholecalciferol (Vitamin D3)', 'Medium Chain Triglycerides', 'Sunflower Oil'],
+    in_stock: true,
+    featured: false,
+    min_order_quantity: 20,
+    certifications: ['WHO-GMP Certified', 'Vegetarian'],
+    created_at: now,
+    updated_at: now
+  }),
+  createProduct({
+    id: '7',
+    name: 'HK Vitals Zinc',
+    description: 'Essential mineral supplement for immune support and metabolism',
+    price: 499,
+    image_url: images.zinc,
+    category: 'supplements',
+    benefits: [
+      'Supports immune system function',
+      'Essential for wound healing',
+      'Promotes healthy skin',
+      'Supports normal growth and development'
+    ],
+    ingredients: ['Zinc Citrate', 'Microcrystalline Cellulose', 'Magnesium Stearate'],
+    in_stock: true,
+    featured: false,
+    min_order_quantity: 20,
+    certifications: ['WHO-GMP Certified', 'Vegan', 'Gluten Free'],
+    created_at: now,
+    updated_at: now
+  }),
+  createProduct({
+    id: '8',
+    name: 'Kapiva Aleovera Gel',
     description: 'Pure and natural aloe vera gel for soothing and hydrating skin',
     price: 299,
-    image_url: getImageUrl('kapiva-aleovera-gel.png'),
+    image_url: images.aloeVeraGel,
     category: 'skincare',
-    tags: ['hydration', 'soothing', 'after-sun'],
     benefits: [
       'Deeply hydrates and soothes dry skin',
       'Cools and calms sunburns and irritation',
@@ -96,229 +196,92 @@ export const products: Product[] = [
     ingredients: ['Aloe Barbadensis Leaf Extract', 'Glycerin', 'Carbomer', 'Phenoxyethanol'],
     in_stock: true,
     featured: true,
-    min_order_quantity: 1,
+    min_order_quantity: 20,
     certifications: ['100% Pure Aloe', 'No Artificial Colors'],
     created_at: now,
     updated_at: now
   }),
   createProduct({
-    id: '5',
-    name: 'HK Vitals Vitamin C Serum',
-    description: 'Brightening serum with 20% vitamin C for radiant and even-toned skin',
-    price: 1299,
-    image_url: getImageUrl('hkvitals-vitamin-c.jpg'),
+    id: '9',
+    name: 'Lotus Sunscreen',
+    description: 'Broad spectrum SPF 50+ sunscreen for face and body',
+    price: 450,
+    image_url: images.sunscreen,
     category: 'skincare',
-    tags: ['brightening', 'antioxidant', 'dark-spots'],
     benefits: [
-      'Reduces dark spots and hyperpigmentation',
-      'Brightens and evens out skin tone',
-      'Powerful antioxidant protection',
-      'Stimulates collagen production'
+      'Provides broad spectrum UVA/UVB protection',
+      'Water-resistant formula',
+      'Lightweight and non-greasy',
+      'Suitable for all skin types'
     ],
-    ingredients: ['Ascorbic Acid', 'Vitamin E', 'Ferulic Acid', 'Hyaluronic Acid'],
-    in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['Dermatologist Tested', 'Cruelty Free', 'Vegan'],
-    created_at: now,
-    updated_at: now
-  }),
-  createProduct({
-    id: '6',
-    name: 'HK Vitals Biotin 10000mcg',
-    description: 'High potency biotin supplement for healthy hair, skin, and nails',
-    price: 899,
-    image_url: getImageUrl('hk-vitals-biotin.png'),
-    category: 'supplements',
-    tags: ['hair-health', 'skin-care', 'nail-strength'],
-    benefits: [
-      'Promotes healthy hair growth and thickness',
-      'Supports strong, healthy nails',
-      'Helps maintain glowing skin',
-      'Essential for metabolism of fats and carbohydrates'
-    ],
-    ingredients: ['Biotin (Vitamin B7)', 'Microcrystalline Cellulose', 'Vegetable Magnesium Stearate'],
-    in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['WHO-GMP Certified', 'Vegan', 'Gluten Free'],
-    created_at: now,
-    updated_at: now
-  }),
-  createProduct({
-    id: '7',
-    name: 'HK Vitals Multivitamin with Zinc & Vitamin C',
-    description: 'Complete daily multivitamin with zinc and vitamin C for overall health and wellness',
-    price: 1599,
-    image_url: getImageUrl('hk-vitals-multivitamin.png'),
-    category: 'vitamins',
-    tags: ['daily-essentials', 'immunity-booster', 'energy'],
-    benefits: [
-      'Comprehensive blend of essential vitamins and minerals',
-      'Supports immune system function with added zinc and vitamin C',
-      'Boosts energy and vitality',
-      'Promotes overall health and wellbeing',
-      'Enhances skin health and collagen production'
-    ],
-    ingredients: ['Vitamin A', 'Vitamin C (as Ascorbic Acid)', 'Vitamin D3', 'Vitamin E', 'B Vitamins', 'Zinc (as Zinc Gluconate)', 'Selenium', 'Magnesium'],
+    ingredients: ['Zinc Oxide', 'Octinoxate', 'Octisalate', 'Avobenzone'],
     in_stock: true,
     featured: true,
-    min_order_quantity: 1,
-    certifications: ['WHO-GMP Certified', 'Vegan', 'Gluten Free'],
+    min_order_quantity: 20,
+    certifications: ['Dermatologically Tested', 'Non-Comedogenic'],
     created_at: now,
     updated_at: now
   }),
   createProduct({
-    id: '8',
-    name: 'Cetaphil Gentle Skin Cleanser',
-    description: 'Mild, non-irritating cleanser for all skin types, including sensitive skin',
-    price: 499,
-    image_url: getImageUrl('cetaphil-cleanser.png'),
+    id: '10',
+    name: 'The Mouth Company Mouthwash',
+    description: 'Alcohol-free mouthwash for fresh breath and oral hygiene',
+    price: 350,
+    image_url: images.mouthwash,
     category: 'personal-care',
-    tags: ['sensitive-skin', 'fragrance-free', 'non-comedogenic'],
     benefits: [
-      'Gently cleanses without stripping moisture',
-      'Maintains skin\'s natural pH balance',
-      'Suitable for face, hands, and body',
-      'Leaves skin feeling soft and smooth'
+      'Kills 99.9% of germs that cause bad breath',
+      'Alcohol-free formula doesn\'t burn',
+      'Helps prevent cavities and plaque',
+      'Freshens breath for hours'
     ],
-    ingredients: ['Water', 'Glycerin', 'Cetyl Alcohol', 'Stearyl Alcohol', 'Sodium Lauryl Sulfate'],
+    ingredients: ['Cetylpyridinium Chloride', 'Sodium Fluoride', 'Sorbitol', 'Xylitol'],
     in_stock: true,
     featured: false,
-    min_order_quantity: 1,
-    certifications: ['Dermatologist Recommended', 'Hypoallergenic', 'Non-comedogenic'],
-    created_at: now,
-    updated_at: now
-  }),
-  createProduct({
-    id: '9',
-    name: 'HK Vitals Vitamin D3 + K2',
-    description: 'Essential bone and immune support supplement with Vitamin D3 and K2',
-    price: 1099,
-    image_url: getImageUrl('hkvitals-vitamind3.png'),
-    category: 'supplements',
-    tags: ['bone-health', 'immunity', 'vitamin-d'],
-    benefits: [
-      'Supports strong and healthy bones',
-      'Enhances calcium absorption',
-      'Boosts immune system function',
-      'May improve mood and energy levels'
-    ],
-    ingredients: ['Vitamin D3 (as Cholecalciferol)', 'Vitamin K2 (as Menaquinone-7)', 'Medium Chain Triglycerides'],
-    in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['WHO-GMP Certified', 'Vegan', 'Gluten Free'],
-    created_at: now,
-    updated_at: now
-  }),
-  createProduct({
-    id: '10',
-    name: 'HK Vitals Omega 3 Fish Oil',
-    description: 'High potency fish oil supplement for heart, brain, and joint health',
-    price: 1499,
-    image_url: getImageUrl('hk-omega3.png'),
-    category: 'supplements',
-    tags: ['heart-health', 'brain-function', 'joint-support'],
-    benefits: [
-      'Supports heart and cardiovascular health',
-      'Promotes brain function and cognitive health',
-      'Helps maintain healthy joints and mobility',
-      'May support mood and emotional wellbeing'
-    ],
-    ingredients: ['Fish Oil Concentrate', 'Omega-3 Fatty Acids (EPA & DHA)', 'Vitamin E (as d-alpha Tocopherol)'],
-    in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['IFOS Certified', 'Molecularly Distilled', 'Mercury Tested'],
-    created_at: now,
-    updated_at: now
-  }),
-  createProduct({
-    id: '10',
-    name: 'HK Vitals Vitamin B12',
-    description: 'High potency Vitamin B12 supplement for energy and nerve function',
-    price: 799,
-    image_url: getImageUrl('hk-vit-b12.png'),
-    category: 'supplements',
-    tags: ['energy', 'nerve-health', 'b-vitamins'],
-    benefits: [
-      'Supports healthy energy levels and metabolism',
-      'Promotes proper nerve function',
-      'Helps maintain healthy red blood cells',
-      'Supports brain health and cognitive function'
-    ],
-    ingredients: ['Methylcobalamin (Vitamin B12)', 'Microcrystalline Cellulose', 'Vegetable Magnesium Stearate'],
-    in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['WHO-GMP Certified', 'Vegan', 'Gluten Free'],
+    min_order_quantity: 20,
+    certifications: ['ADA Accepted', 'Dentist Recommended'],
     created_at: now,
     updated_at: now
   }),
   createProduct({
     id: '11',
-    name: 'HK Vitals Zinc + Vitamin C',
-    description: 'Immune support supplement with zinc and vitamin C',
-    price: 599,
-    image_url: getImageUrl('hk-zinc-vitc.png'),
-    category: 'supplements',
-    tags: ['immunity', 'antioxidant', 'cold-flu'],
+    name: 'Omorfee Bodywash',
+    description: 'Natural body wash with essential oils for nourished skin',
+    price: 399,
+    image_url: images.bodywash,
+    category: 'personal-care',
     benefits: [
-      'Supports healthy immune system function',
-      'Powerful antioxidant protection',
-      'Promotes skin health and wound healing',
-      'May help reduce duration of common colds'
+      'Gently cleanses without stripping natural oils',
+      'Contains nourishing essential oils',
+      'Suitable for daily use',
+      'Free from parabens and sulfates'
     ],
-    ingredients: ['Zinc (as Zinc Citrate)', 'Vitamin C (as Ascorbic Acid)', 'Microcrystalline Cellulose'],
+    ingredients: ['Aloe Vera', 'Coconut Oil', 'Jojoba Oil', 'Vitamin E'],
     in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['WHO-GMP Certified', 'Vegan', 'Gluten Free'],
-    created_at: now,
-    updated_at: now
-  }),
-  createProduct({
-    id: '11',
-    name: 'HK Vitals Retinol Night Cream',
-    description: 'Advanced anti-aging night cream with encapsulated retinol for skin renewal',
-    price: 1299,
-    image_url: getImageUrl('hk-retinol-cream.png'),
-    category: 'skincare',
-    tags: ['anti-aging', 'retinol', 'night-cream'],
-    benefits: [
-      'Reduces appearance of fine lines and wrinkles',
-      'Improves skin texture and tone',
-      'Stimulates collagen production',
-      'Promotes skin cell renewal'
-    ],
-    ingredients: ['Encapsulated Retinol', 'Niacinamide', 'Hyaluronic Acid', 'Ceramides'],
-    in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['Dermatologist Tested', 'Non-comedogenic', 'Paraben Free'],
+    featured: true,
+    min_order_quantity: 20,
+    certifications: ['Natural Ingredients', 'Cruelty Free'],
     created_at: now,
     updated_at: now
   }),
   createProduct({
     id: '12',
-    name: 'HK Vitals Vitamin E Body Lotion',
-    description: 'Nourishing body lotion with Vitamin E and natural moisturizers',
-    price: 599,
-    image_url: getImageUrl('hk-vit-e-lotion.png'),
-    category: 'personal-care',
-    tags: ['moisturizing', 'body-care', 'vitamin-e'],
+    name: 'St D\'vence Tea Tree Face Wash',
+    description: 'Purifying face wash with tea tree oil for clear skin',
+    price: 349,
+    image_url: images.teatreeFacewash,
+    category: 'skincare',
     benefits: [
-      'Deeply hydrates and nourishes dry skin',
-      'Rich in antioxidants to protect skin',
-      'Lightweight, non-greasy formula',
-      'Helps improve skin elasticity'
+      'Helps control excess oil and shine',
+      'Reduces acne and breakouts',
+      'Soothes irritated skin',
+      'Leaves skin feeling fresh and clean'
     ],
-    ingredients: ['Aqua', 'Glycerin', 'Vitamin E (Tocopheryl Acetate)', 'Shea Butter', 'Jojoba Oil'],
+    ingredients: ['Tea Tree Oil', 'Aloe Vera', 'Witch Hazel', 'Niacinamide'],
     in_stock: true,
-    featured: false,
-    min_order_quantity: 1,
-    certifications: ['Dermatologist Tested', 'Paraben Free', 'Sulfate Free'],
+    featured: true,
+    min_order_quantity: 20,
+    certifications: ['Dermatologically Tested', 'Vegan'],
     created_at: now,
     updated_at: now
   })

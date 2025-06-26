@@ -4,9 +4,6 @@ import ProductGrid from '../components/ProductGrid';
 import ProductListItem from '../components/ProductListItem';
 import { ProductService } from '../services/products';
 import { transformProduct, Product } from '../types/product';
-import { Database } from '../lib/supabase-types';
-
-type DBProduct = Database['public']['Tables']['products']['Row'];
 
 const Products: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -17,26 +14,31 @@ const Products: React.FC = () => {
   const [sortBy, setSortBy] = useState<string>('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
-  // Fetch products from Supabase
+  // Fetch products
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         setLoading(true);
         setError(null);
         
-        let dbProducts: DBProduct[];
+        // Get all products and filter by category if needed
+        let fetchedProducts = await ProductService.getProducts();
         
-        if (selectedCategory === 'all') {
-          dbProducts = await ProductService.getProducts();
-        } else {
-          dbProducts = await ProductService.getProductsByCategory(selectedCategory);
+        if (selectedCategory !== 'all') {
+          fetchedProducts = fetchedProducts.filter(
+            product => product.category === selectedCategory
+          );
         }
+
+        // Ensure all products are properly transformed
+        const transformedProducts = fetchedProducts.map(product => 
+          typeof product === 'object' ? transformProduct(product) : product
+        );
         
-        // Transform database products to frontend format
-        const transformedProducts = dbProducts.map(transformProduct);
         setProducts(transformedProducts);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch products');
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again later.');
       } finally {
         setLoading(false);
       }
@@ -65,10 +67,12 @@ const Products: React.FC = () => {
 
     // Filter by search term
     if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
       filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+        product.name.toLowerCase().includes(searchLower) ||
+        product.description.toLowerCase().includes(searchLower) ||
+        (product as any).category?.toLowerCase().includes(searchLower) ||
+        (product as any).category?.replace('-', ' ').toLowerCase().includes(searchLower)
       );
     }
 

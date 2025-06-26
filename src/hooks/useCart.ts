@@ -17,16 +17,16 @@ interface CartStore {
 }
 
 // Helper function to validate and adjust quantity based on MOQ rules
-const validateQuantity = (quantity: number, minOrderQuantity: number = 20): number => {
-  // Ensure minimum is at least 20
+const validateQuantity = (quantity: number, minOrderQuantity: number = 20, orderIncrement: number = 10): number => {
+  // Ensure minimum is at least the minimum order quantity
   if (quantity < minOrderQuantity) {
     return minOrderQuantity;
   }
   
-  // Round up to nearest multiple of 10
-  const remainder = quantity % 10;
+  // Round up to nearest multiple of orderIncrement (default 10)
+  const remainder = quantity % orderIncrement;
   if (remainder !== 0) {
-    return quantity + (10 - remainder);
+    return quantity + (orderIncrement - remainder);
   }
   
   return quantity;
@@ -42,14 +42,15 @@ export const useCart = create<CartStore>()(
         const items = get().items;
         const existingItem = items.find(item => item.product.id === product.id);
         
-        // Always use minimum quantity of 20 and ensure multiples of 10
+        // Use product's minOrderQuantity (default 20) and orderIncrement (default 10)
         const minQuantity = product.minOrderQuantity || 20;
-        const validatedQuantity = validateQuantity(quantity, minQuantity);
+        const orderIncrement = product.orderIncrement || 10;
+        const validatedQuantity = validateQuantity(quantity, minQuantity, orderIncrement);
         
         if (existingItem) {
           // If item exists, add the validated quantity
           const newQuantity = existingItem.quantity + validatedQuantity;
-          const finalQuantity = validateQuantity(newQuantity, minQuantity);
+          const finalQuantity = validateQuantity(newQuantity, minQuantity, orderIncrement);
           
           set({
             items: items.map(item =>
@@ -77,16 +78,7 @@ export const useCart = create<CartStore>()(
         if (!item) return;
         
         const minQuantity = item.product.minOrderQuantity || 20;
-        
-        // If decreasing quantity below minimum, remove the item
-        if (newQuantity < minQuantity) {
-          // If current quantity is already at or below min, don't do anything
-          if (item.quantity <= minQuantity) {
-            return;
-          }
-          // If decreasing below min, set to min
-          newQuantity = minQuantity;
-        }
+        const orderIncrement = item.product.orderIncrement || 10;
         
         // If quantity is zero or negative, remove the item
         if (newQuantity <= 0) {
@@ -94,9 +86,14 @@ export const useCart = create<CartStore>()(
           return;
         }
         
+        // If quantity is less than minimum, set to minimum
+        if (newQuantity < minQuantity) {
+          newQuantity = minQuantity;
+        }
+        
         // Validate quantity against MOQ rules (only for increasing or setting a specific quantity)
         const validatedQuantity = newQuantity > item.quantity 
-          ? validateQuantity(newQuantity, minQuantity)
+          ? validateQuantity(newQuantity, minQuantity, orderIncrement)
           : newQuantity;
         
         set({
@@ -125,23 +122,34 @@ export const useCart = create<CartStore>()(
       
       validateMinimumQuantities: () => {
         const items = get().items;
-        let isValid = true;
+        let hasChanges = false;
         
-        items.forEach(item => {
+        const updatedItems = items.map(item => {
           const minQuantity = item.product.minOrderQuantity || 20;
+          const orderIncrement = item.product.orderIncrement || 10;
+          let newQuantity = item.quantity;
           
-          // Check minimum quantity
-          if (item.quantity < minQuantity) {
-            isValid = false;
+          // Ensure quantity meets minimum
+          if (newQuantity < minQuantity) {
+            newQuantity = minQuantity;
+            hasChanges = true;
           }
           
-          // Check if quantity is multiple of 10
-          if (item.quantity % 10 !== 0) {
-            isValid = false;
+          // Ensure quantity is a multiple of orderIncrement
+          const remainder = newQuantity % orderIncrement;
+          if (remainder !== 0) {
+            newQuantity = newQuantity + (orderIncrement - remainder);
+            hasChanges = true;
           }
+          
+          return hasChanges ? { ...item, quantity: newQuantity } : item;
         });
         
-        return isValid;
+        if (hasChanges) {
+          set({ items: updatedItems });
+        }
+        
+        return !hasChanges; // Returns true if no changes were needed
       },
     }),
     {

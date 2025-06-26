@@ -1,13 +1,27 @@
-import { Database } from '../lib/supabase-types';
-
-// Use Supabase types as the source of truth
-export type Product = Database['public']['Tables']['products']['Row'] & {
-  // Map database fields to frontend expectations
-  image: string; // Maps to image_url
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
   category: 'supplements' | 'skincare' | 'vitamins' | 'personal-care';
-  inStock: boolean; // Maps to in_stock
-  minOrderQuantity: number; // Maps to min_order_quantity
-};
+  inStock: boolean;
+  minOrderQuantity: number;
+  orderIncrement: number;
+  featured: boolean;
+  rating: number;
+  numReviews: number;
+  created_at: string;
+  updated_at: string;
+  benefits?: string[];
+  ingredients?: string[];
+  tags?: string[];
+  certifications?: string[];
+  // Additional fields that might be used in the application
+  image_url?: string;
+  in_stock?: boolean;
+  min_order_quantity?: number;
+}
 
 export interface CartItem {
   product: Product;
@@ -38,23 +52,22 @@ export interface CheckoutData {
   orderNotes?: string;
 }
 
-// Helper function to transform database product to frontend product
-export const transformProduct = (dbProduct: Database['public']['Tables']['products']['Row']): Product => {
+// Helper function to transform product data to ensure consistency
+export const transformProduct = (product: Partial<Product>): Product => {
   return {
-    ...dbProduct,
-    image: dbProduct.image_url,
-    inStock: dbProduct.in_stock,
-    minOrderQuantity: dbProduct.min_order_quantity,
-  };
-};
-
-// Helper function to transform frontend product to database product
-export const transformProductForDB = (product: Partial<Product>): Partial<Database['public']['Tables']['products']['Insert']> => {
-  const { image, inStock, minOrderQuantity, ...rest } = product;
-  return {
-    ...rest,
-    image_url: image,
-    in_stock: inStock,
-    min_order_quantity: minOrderQuantity,
+    id: product.id || '',
+    name: product.name || '',
+    description: product.description || '',
+    price: product.price || 0,
+    image: product.image || product.image_url || '',
+    category: product.category || 'supplements',
+    inStock: product.inStock ?? product.in_stock ?? true,
+    minOrderQuantity: product.minOrderQuantity ?? product.min_order_quantity ?? 20,
+    orderIncrement: (product as any).orderIncrement ?? 10,
+    featured: product.featured || false,
+    rating: product.rating || 0,
+    numReviews: product.numReviews || 0,
+    created_at: product.created_at || new Date().toISOString(),
+    updated_at: product.updated_at || new Date().toISOString(),
   };
 };

@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ProductService } from '../services/products';
-import { Database } from '../lib/supabase-types';
-
-type Product = Database['public']['Tables']['products']['Row'];
+import { Product } from '../types/product';
 
 export const useProducts = () => {
   const [products, setProducts] = useState<Product[]>([]);

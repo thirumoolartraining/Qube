@@ -3,6 +3,7 @@ import { ShoppingCart, Heart, Star, Package, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Product } from '../types/product';
 import { useCart } from '../hooks/useCart';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface ProductListItemProps {
   product: Product;
@@ -40,7 +41,7 @@ const ProductListItem: React.FC<ProductListItemProps> = ({ product }) => {
         {/* Product Image */}
         <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-lg">
           <img
-            src={product.image}
+            src={getImageUrl(product.image)}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
