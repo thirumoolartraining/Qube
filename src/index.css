@@ -1,0 +1,334 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #2E7D32;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1B5E20;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Base typography */
+body {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  color: #1F2937;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #1F2937;
+}
+
+/* Line clamp utilities */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* Grid pattern background */
+.bg-grid-pattern {
+  background-image: radial-gradient(circle, #e5e7eb 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes gentlePulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.1;
+    transform: scale(1.05);
+  }
+}
+
+.animate-gentle-pulse {
+  animation: gentlePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-action-blue focus:ring-offset-2;
+}
+
+/* Custom button styles */
+.btn-primary {
+  @apply bg-primary text-white px-3 py-2 rounded-lg font-medium text-base hover:bg-primary-dark transition-all duration-200 focus-ring disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply border-2 border-primary text-primary px-6 py-3 rounded-lg font-medium hover:bg-primary hover:text-white transition-all duration-200 hover:scale-105 focus-ring;
+}
+
+.btn-outline {
+  @apply border-2 border-primary text-primary px-6 py-3 rounded-lg font-medium hover:bg-green-50 transition-all duration-200 focus-ring;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-md p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1;
+}
+
+.card-wellness {
+  @apply bg-surface rounded-xl shadow-sm p-6 hover:shadow-md transition-all duration-300 hover:scale-105;
+}
+
+/* Form styles */
+.form-input {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-action-blue focus:border-transparent transition-all duration-200;
+}
+
+.form-input-error {
+  @apply w-full px-4 py-3 border border-error-red rounded-lg focus:ring-2 focus:ring-error-red focus:border-transparent transition-all duration-200;
+}
+
+.form-input-valid {
+  @apply w-full px-4 py-3 border border-success-green rounded-lg focus:ring-2 focus:ring-success-green focus:border-transparent transition-all duration-200 bg-success-green/5;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-text-primary mb-2;
+}
+
+.form-error {
+  @apply mt-1 text-sm text-error-red-text;
+}
+
+.form-success {
+  @apply mt-1 text-sm text-success-green-text;
+}
+
+/* Responsive typography */
+.text-responsive-sm {
+  @apply text-sm md:text-base;
+}
+
+.text-responsive-base {
+  @apply text-base md:text-lg;
+}
+
+.text-responsive-lg {
+  @apply text-lg md:text-xl;
+}
+
+.text-responsive-xl {
+  @apply text-xl md:text-2xl;
+}
+
+.text-responsive-2xl {
+  @apply text-2xl md:text-3xl;
+}
+
+.text-responsive-3xl {
+  @apply text-3xl md:text-4xl;
+}
+
+/* Golden ratio spacing */
+.space-golden-sm {
+  @apply space-y-3;
+}
+
+.space-golden-md {
+  @apply space-y-5;
+}
+
+.space-golden-lg {
+  @apply space-y-8;
+}
+
+.space-golden-xl {
+  @apply space-y-13;
+}
+
+/* Custom padding based on golden ratio */
+.p-golden-sm {
+  padding: 0.8125rem; /* 13px */
+}
+
+.p-golden-md {
+  padding: 1.3125rem; /* 21px */
+}
+
+.p-golden-lg {
+  padding: 2.125rem; /* 34px */
+}
+
+.p-golden-xl {
+  padding: 3.4375rem; /* 55px */
+}
+
+/* Section spacing */
+.section-padding {
+  @apply py-16 md:py-21 lg:py-21;
+}
+
+/* Container with golden ratio max-width */
+.container-golden {
+  max-width: 1200px; /* Following golden ratio principles */
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-golden {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-golden {
+    padding: 0 2rem;
+  }
+}
+
+/* Hover effects */
+.hover-lift {
+  @apply transition-transform duration-300 hover:-translate-y-1;
+}
+
+.hover-scale {
+  @apply transition-transform duration-300 hover:scale-105;
+}
+
+/* Loading states */
+.loading-spinner {
+  @apply animate-spin rounded-full border-2 border-gray-300 border-t-primary;
+}
+
+/* Category badges */
+.badge-vitamins {
+  @apply bg-yellow-100 text-text-primary;
+}
+
+.badge-supplements {
+  @apply bg-info/10 text-text-primary;
+}
+
+.badge-skincare {
+  @apply bg-accent/10 text-text-primary;
+}
+
+.badge-personal-care {
+  @apply bg-purple-600/10 text-text-primary;
+}
+
+/* Wellness gradient backgrounds */
+.bg-wellness-gradient {
+  background: linear-gradient(135deg, #F9FAFB 0%, #E5F5EC 100%);
+}
+
+.bg-hero-gradient {
+  background: linear-gradient(135deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.95) 50%, rgba(255,255,255,0.8) 100%);
+}
+
+/* Trust indicators */
+.trust-badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Custom utilities for golden ratio layouts */
+.golden-left {
+  width: 61.8%;
+}
+
+.golden-right {
+  width: 38.2%;
+}
+
+/* Smooth transitions for all interactive elements */
+* {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Focus visible for better accessibility */
+*:focus-visible {
+  outline: 2px solid #3B82F6;
+  outline-offset: 2px;
+}
