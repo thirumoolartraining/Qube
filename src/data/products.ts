@@ -1,19 +1,20 @@
 import { Product } from '../types/product';
+import { getProductImageUrl } from '../utils/assetUtils';
 
-// Image paths in public directory
+// Image paths - using the asset utility for consistent paths
 const images = {
-  biotin: '/images/products/21stcentury-biotin.png',
-  omega3: '/images/products/boldfit-omega3.png',
-  teatreeFacewash: '/images/products/teatree-facewash.png',
-  aloeVeraGel: '/images/products/kapiva-aleovera-gel.png',
-  multivitamin: '/images/products/hk-vitals-multivitamin.png',
-  vitaminD3: '/images/products/hkvitals-vitamind3.png',
-  zinc: '/images/products/hkvitals-zinc.png',
-  cetaphil: '/images/products/cetaphil-moisturising-cream.png',
-  boroplus: '/images/products/boroplus-antiseptic-cream.png',
-  sunscreen: '/images/products/lotus-sunscreen.png',
-  mouthwash: '/images/products/mouthwash.png',
-  bodywash: '/images/products/omorfee-bodywash.png'
+  biotin: getProductImageUrl('21stcentury-biotin.png'),
+  omega3: getProductImageUrl('boldfit-omega3.png'),
+  teatreeFacewash: getProductImageUrl('teatree-facewash.png'),
+  aloeVeraGel: getProductImageUrl('kapiva-aleovera-gel.png'),
+  multivitamin: getProductImageUrl('hk-vitals-multivitamin.png'),
+  vitaminD3: getProductImageUrl('hkvitals-vitamind3.png'),
+  zinc: getProductImageUrl('hkvitals-zinc.png'),
+  cetaphil: getProductImageUrl('cetaphil-moisturising-cream.png'),
+  boroplus: getProductImageUrl('boroplus-antiseptic-cream.png'),
+  sunscreen: getProductImageUrl('lotus-sunscreen.png'),
+  mouthwash: getProductImageUrl('mouthwash.png'),
+  bodywash: getProductImageUrl('omorfee-bodywash.png')
 };
 
 const now = new Date().toISOString();

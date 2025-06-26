@@ -17,6 +17,7 @@ export default defineConfig(({ mode }) => {
       }),
     ].filter(Boolean),
     base: isProduction ? '/' : '/',
+    publicDir: 'public',
     server: {
       port: 3000,
       open: true,
