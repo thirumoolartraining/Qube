@@ -40,9 +40,13 @@ const ProductListItem: React.FC<ProductListItemProps> = ({ product }) => {
         {/* Product Image */}
         <div className="relative w-32 h-32 flex-shrink-0 overflow-hidden rounded-lg">
           <img
-            src={product.image}
+            src={product.image.startsWith('http') ? product.image : `${import.meta.env.BASE_URL}${product.image}`}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            onError={(e) => {
+              // Fallback to a placeholder image if the main image fails to load
+              e.currentTarget.src = `${import.meta.env.BASE_URL}/placeholder-product.png`;
+            }}
           />
           
           {/* Badges */}

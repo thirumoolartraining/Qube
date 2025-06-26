@@ -27,10 +27,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       {/* Image Section */}
       <div className="relative pt-[100%] overflow-hidden">
         <img
-          src={product.image}
+          src={product.image.startsWith('http') ? product.image : `${import.meta.env.BASE_URL}${product.image}`}
           alt={product.name}
           loading="lazy"
           className="absolute top-0 left-0 w-full h-full object-contain p-4 group-hover:scale-105 transition-transform duration-500"
+          onError={(e) => {
+            // Fallback to a placeholder image if the main image fails to load
+            e.currentTarget.src = `${import.meta.env.BASE_URL}/placeholder-product.png`;
+          }}
         />
         
 
