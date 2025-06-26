@@ -1,14 +1,5 @@
 import { Product } from '../types/product';
-
-// Import images
-import biotinImage from '../assets/images/21stcentury-biotin.png';
-import omega3Image from '../assets/images/boldfit-omega3.png';
-import teatreeFacewashImage from '../assets/images/teatree-facewash.png';
-import aloeVeraGelImage from '../assets/images/kapiva-aleovera-gel.png';
-import vitaminCSerumImage from '../assets/images/hkvitals-vitamin-c.jpg';
-import biotin10000Image from '../assets/images/hk-vitals-biotin.png';
-import cleanserImage from '../assets/images/cetaphil-cleanser.png';
-import vitaminD3K2Image from '../assets/images/hkvitals-vitamind3.png';
+import { getImageUrl } from '../utils/imageUtils';
 
 const now = new Date().toISOString();
 
@@ -31,7 +22,7 @@ export const products: Product[] = [
     name: '21st Century Biotine',
     description: 'High-potency biotin supplement for healthy hair, skin, and nails',
     price: 800,
-    image_url: biotinImage,
+    image_url: getImageUrl('21stcentury-biotin.png'),
     category: 'vitamins',
     tags: ['hair-health', 'skin-care', 'nail-strength'],
     benefits: [
@@ -52,7 +43,7 @@ export const products: Product[] = [
     name: 'Boldfit Omega 3 Fish Oil',
     description: 'High-purity fish oil with EPA and DHA for heart and brain health',
     price: 600,
-    image_url: omega3Image,
+    image_url: getImageUrl('boldfit-omega3.png'),
     category: 'supplements',
     tags: ['heart-health', 'brain-function', 'joint-support'],
     benefits: [
@@ -73,7 +64,7 @@ export const products: Product[] = [
     name: "St D'vence Tea Tree Face Wash",
     description: 'Purifying face wash with tea tree oil for clear, refreshed skin',
     price: 499,
-    image_url: teatreeFacewashImage,
+    image_url: getImageUrl('teatree-facewash.png'),
     category: 'skincare',
     tags: ['oil-control', 'acne-prone', 'deep-cleansing'],
     benefits: [
@@ -94,7 +85,7 @@ export const products: Product[] = [
     name: 'Kapiva Aloe Vera Gel',
     description: 'Pure and natural aloe vera gel for soothing and hydrating skin',
     price: 299,
-    image_url: aloeVeraGelImage,
+    image_url: getImageUrl('kapiva-aleovera-gel.png'),
     category: 'skincare',
     tags: ['hydration', 'soothing', 'after-sun'],
     benefits: [
@@ -115,7 +106,7 @@ export const products: Product[] = [
     name: 'HK Vitals Vitamin C Serum',
     description: 'Brightening serum with 20% vitamin C for radiant and even-toned skin',
     price: 1299,
-    image_url: vitaminCSerumImage,
+    image_url: getImageUrl('hkvitals-vitamin-c.jpg'),
     category: 'skincare',
     tags: ['brightening', 'antioxidant', 'dark-spots'],
     benefits: [
@@ -137,7 +128,7 @@ export const products: Product[] = [
     name: 'HK Vitals Biotin 10000mcg',
     description: 'High potency biotin supplement for healthy hair, skin, and nails',
     price: 899,
-    image_url: biotin10000Image,
+    image_url: getImageUrl('hk-vitals-biotin.png'),
     category: 'supplements',
     tags: ['hair-health', 'skin-care', 'nail-strength'],
     benefits: [
@@ -159,7 +150,7 @@ export const products: Product[] = [
     name: 'HK Vitals Multivitamin with Zinc & Vitamin C',
     description: 'Complete daily multivitamin with zinc and vitamin C for overall health and wellness',
     price: 1599,
-    image_url: new URL('../assets/images/hk-vitals-multivitamin.png', import.meta.url).href,
+    image_url: getImageUrl('hk-vitals-multivitamin.png'),
     category: 'vitamins',
     tags: ['daily-essentials', 'immunity-booster', 'energy'],
     benefits: [
@@ -182,7 +173,7 @@ export const products: Product[] = [
     name: 'Cetaphil Gentle Skin Cleanser',
     description: 'Mild, non-irritating cleanser for all skin types, including sensitive skin',
     price: 499,
-    image_url: cleanserImage,
+    image_url: getImageUrl('cetaphil-cleanser.png'),
     category: 'personal-care',
     tags: ['sensitive-skin', 'fragrance-free', 'non-comedogenic'],
     benefits: [
@@ -204,7 +195,7 @@ export const products: Product[] = [
     name: 'HK Vitals Vitamin D3 + K2',
     description: 'Essential bone and immune support supplement with Vitamin D3 and K2',
     price: 1099,
-    image_url: vitaminD3K2Image,
+    image_url: getImageUrl('hkvitals-vitamind3.png'),
     category: 'supplements',
     tags: ['bone-health', 'immunity', 'vitamin-d'],
     benefits: [
@@ -226,7 +217,7 @@ export const products: Product[] = [
     name: 'HK Vitals Omega 3 Fish Oil',
     description: 'High potency fish oil supplement for heart, brain, and joint health',
     price: 1499,
-    image_url: '/assets/images/hk-omega3.png',
+    image_url: getImageUrl('hk-omega3.png'),
     category: 'supplements',
     tags: ['heart-health', 'brain-function', 'joint-support'],
     benefits: [
@@ -248,7 +239,7 @@ export const products: Product[] = [
     name: 'HK Vitals Vitamin B12',
     description: 'High potency Vitamin B12 supplement for energy and nerve function',
     price: 799,
-    image_url: '/assets/images/hk-vit-b12.png',
+    image_url: getImageUrl('hk-vit-b12.png'),
     category: 'supplements',
     tags: ['energy', 'nerve-health', 'b-vitamins'],
     benefits: [
@@ -270,7 +261,7 @@ export const products: Product[] = [
     name: 'HK Vitals Zinc + Vitamin C',
     description: 'Immune support supplement with zinc and vitamin C',
     price: 599,
-    image_url: '/assets/images/hk-zinc-vitc.png',
+    image_url: getImageUrl('hk-zinc-vitc.png'),
     category: 'supplements',
     tags: ['immunity', 'antioxidant', 'cold-flu'],
     benefits: [
@@ -292,7 +283,7 @@ export const products: Product[] = [
     name: 'HK Vitals Retinol Night Cream',
     description: 'Advanced anti-aging night cream with encapsulated retinol for skin renewal',
     price: 1299,
-    image_url: '/assets/images/hk-retinol-cream.png',
+    image_url: getImageUrl('hk-retinol-cream.png'),
     category: 'skincare',
     tags: ['anti-aging', 'retinol', 'night-cream'],
     benefits: [
@@ -314,7 +305,7 @@ export const products: Product[] = [
     name: 'HK Vitals Vitamin E Body Lotion',
     description: 'Nourishing body lotion with Vitamin E and natural moisturizers',
     price: 599,
-    image_url: '/assets/images/hk-vit-e-lotion.png',
+    image_url: getImageUrl('hk-vit-e-lotion.png'),
     category: 'personal-care',
     tags: ['moisturizing', 'body-care', 'vitamin-e'],
     benefits: [
