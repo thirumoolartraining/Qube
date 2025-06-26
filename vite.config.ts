@@ -14,6 +14,7 @@ export default defineConfig(({ mode }) => {
         open: true,
         gzipSize: true,
         brotliSize: true,
+        filename: 'stats.html'
       }),
     ].filter(Boolean),
     base: isProduction ? '/' : '/',
@@ -32,6 +33,8 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
+      assetsDir: '.',
+      emptyOutDir: true,
       sourcemap: isProduction ? 'hidden' : false,
       minify: isProduction ? 'esbuild' : false,
       cssCodeSplit: true,

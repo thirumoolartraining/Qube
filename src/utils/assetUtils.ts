@@ -11,7 +11,8 @@ export const getAssetPath = (path: string): string => {
     return `/${cleanPath}`;
   }
   
-  // In production, use relative path
+  // In production, ensure the path is relative to the root
+  // Vercel will serve from the root of the domain
   return `/${cleanPath}`;
 };
 
@@ -19,5 +20,23 @@ export const getAssetPath = (path: string): string => {
  * Get the full URL for a product image
  */
 export const getProductImageUrl = (imagePath: string): string => {
-  return getAssetPath(`images/products/${imagePath}`);
+  // In production, the images should be in the root /images directory
+  if (import.meta.env.PROD) {
+    return `/images/products/${imagePath}`;
+  }
+  // In development, use the path from public directory
+  return `/images/products/${imagePath}`;
+};
+
+/**
+ * Check if an image exists at the given path
+ */
+export const imageExists = async (url: string): Promise<boolean> => {
+  try {
+    const response = await fetch(url, { method: 'HEAD' });
+    return response.ok;
+  } catch (error) {
+    console.error(`Error checking if image exists at ${url}:`, error);
+    return false;
+  }
 };
