@@ -1,27 +1,52 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 // https://vitejs.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const isProduction = mode === 'production';
+  
   return {
-    plugins: [react()],
-    base: './', // Use relative paths for assets
+    plugins: [
+      react(),
+      isProduction && visualizer({
+        open: true,
+        gzipSize: true,
+        brotliSize: true,
+      }),
+    ].filter(Boolean),
+    base: isProduction ? '/' : '/',
+    server: {
+      port: 3000,
+      open: true,
+    },
+    preview: {
+      port: 3000,
+      open: true,
+    },
     optimizeDeps: {
+      include: ['react', 'react-dom', 'react-router-dom'],
       exclude: ['lucide-react'],
     },
     build: {
       outDir: 'dist',
-      sourcemap: true,
+      sourcemap: isProduction ? 'hidden' : false,
+      minify: isProduction ? 'esbuild' : false,
+      cssCodeSplit: true,
+      reportCompressedSize: true,
+      chunkSizeWarningLimit: 1600,
       rollupOptions: {
         input: {
           main: resolve(__dirname, 'index.html'),
         },
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'react-router-dom'],
+            utils: ['zod', 'zustand', 'react-hook-form'],
+          },
+        },
       },
-    },
-    server: {
-      port: 3000,
-      open: true,
     },
     define: {
       'process.env': process.env,
