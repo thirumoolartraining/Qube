@@ -112,67 +112,7 @@ const About: React.FC = () => {
         </div>
       </section>
 
-      {/* Our Team */}
-      <section className="py-16 lg:py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center bg-green-100 text-green-800 text-sm font-medium px-4 py-2 rounded-full mb-4">
-              <span>Our Team</span>
-            </div>
-            <h2 className="text-3xl md:text-4xl font-bold font-heading text-text-primary mb-6">
-              Meet Our Expert Team
-            </h2>
-            <p className="text-lg text-text-secondary max-w-3xl mx-auto">
-              Dedicated professionals committed to your health and well-being
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                name: 'Dr. Rajesh Kumar',
-                role: 'Chief Medical Officer',
-                image: 'https://randomuser.me/api/portraits/men/32.jpg'
-              },
-              {
-                name: 'Priya Sharma',
-                role: 'Head of Research',
-                image: 'https://randomuser.me/api/portraits/women/44.jpg'
-              },
-              {
-                name: 'Vikram Patel',
-                role: 'Production Head',
-                image: 'https://randomuser.me/api/portraits/men/22.jpg'
-              },
-              {
-                name: 'Ananya Reddy',
-                role: 'Quality Control',
-                image: 'https://randomuser.me/api/portraits/women/63.jpg'
-              }
-            ].map((member, index) => (
-              <div key={index} className="group text-center">
-                <div className="relative overflow-hidden rounded-xl mb-6 h-64">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-6">
-                    <div className="text-white text-left">
-                      <h4 className="font-bold text-lg">{member.name}</h4>
-                      <p className="text-green-200">{member.role}</p>
-                    </div>
-                  </div>
-                </div>
-                <h3 className="text-lg font-semibold text-text-primary">{member.name}</h3>
-                <p className="text-text-secondary">{member.role}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
+{/* CTA Section */}
       <section className="py-16 lg:py-24 bg-gradient-to-r from-primary to-green-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="max-w-3xl mx-auto">
