@@ -1,3 +1,5 @@
+import { getProductImageUrl } from '../utils/assetUtils';
+
 const productImages = [
   '21stcentury-biotin.png',
   'boldfit-omega3.png',
@@ -12,7 +14,7 @@ const productImages = [
   'omorfee-bodywash.png',
   'qube-logo.png',
   'teatree-facewash.png'
-];
+].map(img => getProductImageUrl(img));
 
 const TestImage = () => {
   return (
@@ -46,7 +48,7 @@ const TestImage = () => {
               overflow: 'hidden'
             }}>
               <img 
-                src={`/images/products/${imageName}`} 
+                src={getProductImageUrl(imageName)} 
                 alt={imageName}
                 style={{ 
                   maxWidth: '100%',
@@ -55,7 +57,7 @@ const TestImage = () => {
                 }}
                 onError={(e) => {
                   const target = e.target as HTMLImageElement;
-                  target.src = '/images/placeholders/image-not-found.png';
+                  target.src = getProductImageUrl('placeholders/image-not-found.png');
                   target.alt = 'Image not found';
                 }}
               />

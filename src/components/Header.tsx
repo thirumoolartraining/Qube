@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Menu, X, Phone, Mail, Globe } from 'lucide-react';
-const qubeLogo = './images/products/qube-logo.png';
+import { getProductImageUrl } from '../utils/assetUtils';
 import { useCart } from '../hooks/useCart';
+
+const qubeLogo = getProductImageUrl('qube-logo.png');
 
 const Header: React.FC = () => {
   const { getTotalItems, openCart } = useCart();
