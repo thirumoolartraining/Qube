@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "node scripts/build.js",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx}\""
@@ -26,6 +26,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "fs-extra": "^11.2.0",
     "@eslint/js": "^9.9.1",
     "@types/node": "^20.11.28",
     "@types/react": "^18.3.5",

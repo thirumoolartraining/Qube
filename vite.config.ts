@@ -1,11 +1,35 @@
-import { defineConfig } from 'vite';
+import { defineConfig, type ConfigEnv, type UserConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
 import { visualizer } from 'rollup-plugin-visualizer';
+import type { RollupError } from 'rollup';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }: ConfigEnv): Promise<UserConfig> => {
   const isProduction = mode === 'production';
+  console.log(`Running in ${isProduction ? 'production' : 'development'} mode`);
+  
+  // Rollup configuration
+  const rollupOptions = {
+    onwarn(warning: RollupError, warn: (warning: RollupError) => void) {
+      if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+        return;
+      }
+      warn(warning);
+    },
+    input: {
+      main: resolve(__dirname, 'index.html'),
+    },
+    output: {
+      assetFileNames: 'assets/[name]-[hash][extname]',
+      chunkFileNames: 'assets/[name]-[hash].js',
+      entryFileNames: 'assets/[name]-[hash].js',
+      manualChunks: {
+        vendor: ['react', 'react-dom', 'react-router-dom'],
+        utils: ['zod', 'zustand', 'react-hook-form'],
+      },
+    },
+  };
   
   return {
     plugins: [
@@ -16,7 +40,7 @@ export default defineConfig(({ mode }) => {
         brotliSize: true,
         filename: 'stats.html'
       }),
-    ].filter(Boolean),
+    ].filter(Boolean) as any[],
     base: isProduction ? '/' : '/',
     publicDir: 'public',
     server: {
@@ -33,27 +57,19 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'dist',
-      assetsDir: '.',
+      assetsDir: 'assets',
       emptyOutDir: true,
       sourcemap: isProduction ? 'hidden' : false,
       minify: isProduction ? 'esbuild' : false,
       cssCodeSplit: true,
       reportCompressedSize: true,
       chunkSizeWarningLimit: 1600,
-      rollupOptions: {
-        input: {
-          main: resolve(__dirname, 'index.html'),
-        },
-        output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-            utils: ['zod', 'zustand', 'react-hook-form'],
-          },
-        },
-      },
+      rollupOptions,
+      // Copy public directory in production
+      copyPublicDir: isProduction,
     },
     define: {
-      'process.env': process.env,
+      'process.env': {},
     },
   };
 });

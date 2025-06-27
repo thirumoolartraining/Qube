@@ -16,6 +16,7 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import ShippingPolicy from './pages/ShippingPolicy';
 import CancellationRefundPolicy from './pages/CancellationRefundPolicy';
 import Contact from './pages/Contact';
+import TestImage from './components/TestImage';
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="/shipping-policy" element={<ShippingPolicy />} />
             <Route path="/cancellation-refund-policy" element={<CancellationRefundPolicy />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/test-image" element={<TestImage />} />
           </Routes>
         </main>
         <Footer />
