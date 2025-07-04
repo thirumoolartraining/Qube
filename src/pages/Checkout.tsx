@@ -7,12 +7,10 @@ import { checkoutSchema } from '../schemas/validation';
 import { CheckoutData } from '../types/product';
 import { useCart } from '../hooks/useCart';
 import { OrderService } from '../services/orders';
-import { useAuth } from '../hooks/useAuth';
 import toast from 'react-hot-toast';
 
 const Checkout: React.FC = () => {
   const { items, getTotalPrice, clearCart, validateMinimumQuantities, updateQuantity, removeItem } = useCart();
-  const { user } = useAuth();
   const navigate = useNavigate();
   
   const {
@@ -45,13 +43,6 @@ const Checkout: React.FC = () => {
       return;
     }
 
-    //Check if user is authenticated
-    if (!user) {
-      toast.error('Please sign in to place an order');
-      // You could redirect to login page here
-      return;
-    }
-
     try {
       const orderData = {
         shipping_address: {
@@ -71,7 +62,38 @@ const Checkout: React.FC = () => {
       await OrderService.createOrder(orderData);
       
       clearCart();
-      toast.success('Order placed successfully!');
+      
+      // Show success notification
+      toast.success(
+        <div className="flex flex-col items-center">
+          <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-2">
+            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+          </div>
+          <div className="text-center">
+            <h3 className="font-medium text-gray-900">Order Placed Successfully!</h3>
+            <p className="text-sm text-gray-600">Thank you for your order. Our team will get back to you shortly.</p>
+          </div>
+        </div>,
+        {
+          duration: 5000,
+          style: {
+            background: '#f0fdf4',
+            border: '1px solid #86efac',
+            color: '#166534',
+            padding: '1rem',
+            borderRadius: '0.5rem',
+            width: '100%',
+            maxWidth: '24rem',
+          },
+          iconTheme: {
+            primary: '#16a34a',
+            secondary: '#f0fdf4',
+          },
+        }
+      );
+      
       navigate('/thank-you');
     } catch (error) {
       console.error('Error placing order:', error);
@@ -325,8 +347,10 @@ const Checkout: React.FC = () => {
               {/* Place Order Button */}
               <button
                 type="submit"
-                disabled={isSubmitting || !user}
-                className="btn-primary w-full py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center text-lg"
+                disabled={isSubmitting || Object.keys(errors).length > 0}
+                className={`btn-primary w-full py-4 flex items-center justify-center text-lg ${
+                  isSubmitting || Object.keys(errors).length > 0 ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
               >
                 {isSubmitting ? (
                   <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white mr-2"></div>

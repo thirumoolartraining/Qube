@@ -65,10 +65,9 @@ const getOrderItems = (): OrderItem[] => {
 
 export class OrderService {
   // Create a new order
-  static async createOrder(orderData: CreateOrderData, userId: string): Promise<Order> {
-    if (!userId) {
-      throw new Error('User must be authenticated to create an order');
-    }
+  static async createOrder(orderData: CreateOrderData, userId?: string): Promise<Order> {
+    // Generate a guest user ID if not provided
+    const orderUserId = userId || `guest_${Date.now()}`;
 
     // Calculate total amount
     const totalAmount = orderData.items.reduce(
@@ -79,7 +78,7 @@ export class OrderService {
     // Create the order
     const newOrder: Order = {
       id: `order_${Date.now()}`,
-      user_id: userId,
+      user_id: orderUserId,
       total_amount: totalAmount,
       shipping_address: orderData.shipping_address,
       order_notes: orderData.order_notes,
